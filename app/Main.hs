@@ -58,21 +58,21 @@ getName = do
   putStrLn "Name: "
   getLine
 
-getTags :: IO [String]
+getTags :: IO String
 getTags = do
   putStrLn "Tags: "
-  input <- getLine
-  case input of 
+  getLine
+  {-case input of 
     Nothing -> return []
     Just v -> do
       moreTags <- getTags
-      return (v:moreTags)
+      return (v : moreTags)-}
 
 addTodo :: [Todo] -> IO Todo
 addTodo td = do
   n  <- getName
   t  <- getTags
-  return (Todo -1 n t)
+  return (Todo 1 n [t])
 
 editTodo :: Int -> [Todo] -> String -> IO ()
 editTodo todoId td newTodo =
@@ -91,8 +91,6 @@ editOne n todos newTodo =
       then Nothing 
       else do
         Just (todos !! n) -- index n
-
-
 
 ------------------------------- 
 main :: IO ()
