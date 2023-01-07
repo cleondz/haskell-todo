@@ -27,11 +27,11 @@ showTodo todo =  putStrLn (show todo)
 readUserCommand :: [Todo] -> IO()
 readUserCommand td = do 
   command <- getLine 
-  userCommand2 command td
+  userCommand command td
 
 -- perform user commands
-userCommand2 :: String -> [Todo] -> IO ()
-userCommand2 command td =
+userCommand :: String -> [Todo] -> IO ()
+userCommand command td =
     case command of
       ('e' : (' ' : todoId) ) -> do
           case readMaybe todoId :: Maybe Int of 
@@ -41,6 +41,9 @@ userCommand2 command td =
             Just v -> do 
               editTodo (read todoId :: Int) td "Test"
               readUserCommand td
+      "a" -> do 
+          addTodo td
+          readUserCommand td
       "l" -> do
           mapM_ showTodo [todo1, todo2]
           readUserCommand td
@@ -49,22 +52,27 @@ userCommand2 command td =
           putStrLn ("Invalid  command: [" ++ command ++ "]")
           readUserCommand td
 
-userCommand ::  String -> [Todo] -> IO ()
-userCommand ('e' : (' ' : todoId) ) td = do
-  case readMaybe todoId :: Maybe Int of 
-    Nothing -> do 
-      putStrLn ("Wrong todoId: `" ++ todoId ++ "`")
-      readUserCommand td
-    Just v -> do 
-      editTodo (read todoId :: Int) td "Test"
-      readUserCommand td
-userCommand "l" td  = do
-  mapM_ showTodo [todo1, todo2]
-  readUserCommand td
-userCommand "q" td = return  ()
-userCommand command td = do 
-  putStrLn ("Invalid  command: [" ++ command ++ "]")
-  readUserCommand td
+
+getName :: IO String
+getName = do 
+  putStrLn "Name: "
+  getLine
+
+getTags :: IO [String]
+getTags = do
+  putStrLn "Tags: "
+  input <- getLine
+  case input of 
+    Nothing -> return []
+    Just v -> do
+      moreTags <- getTags
+      return (v:moreTags)
+
+addTodo :: [Todo] -> IO Todo
+addTodo td = do
+  n  <- getName
+  t  <- getTags
+  return (Todo -1 n t)
 
 editTodo :: Int -> [Todo] -> String -> IO ()
 editTodo todoId td newTodo =
@@ -83,6 +91,8 @@ editOne n todos newTodo =
       then Nothing 
       else do
         Just (todos !! n) -- index n
+
+
 
 ------------------------------- 
 main :: IO ()
